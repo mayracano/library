@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: library
+
+  profiles:
+    active: local
+
+  datasource:
+    url: ${CLOUD_DB_URL}
+    username: ${CLOUD_DB_USER}
+    password: ${CLOUD_DB_PASSWORD}
+    database: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+      show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: '"Library"'
+
+  docker:
+    compose:
+      enabled: false
+
+application:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET}
+      expiration: ${JWT_EXPIRATION}
+
+level:
+  root: INFO
+  com.generic.library: DEBUG
+  org.hibernate.SQL: DEBUG #
