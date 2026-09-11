@@ -39,6 +39,25 @@ Native, immutable Java `Records` are employed for secure data transfer between c
 ### 4. Intercepting Filter Pattern (OncePerRequestFilter)
 The application perimeter security enforces a custom `JwtAuthenticationFilter`. It asynchronously intercepts every incoming HTTP request exactly once to decode and cryptographically verify the JWT signature, encapsulating security away from business controller routines.
 
+### 5. Global Exception Handling (Controller Advice Pattern)
+The API decouples exception mapping away from standard business execution blocks by implementing a global interceptor via `@RestControllerAdvice` (`GlobalExceptionHandler`).
+
+*   **Centralized Error Handling**: Rather than utilizing messy `try-catch` structures inside REST controllers, exceptions thrown anywhere in the business layers (e.g., `ResourceNotFoundException`, `BadCredentialsException`) bubble up to this central advisor.
+*   **Semantic HTTP Responses**: The advisor sanitizes infrastructure or business faults and converts them into standardized, structured JSON payloads (`ErrorResponse`) with explicit HTTP status codes (such as `401 Unauthorized`, `403 Forbidden`, or `404 Not Found`). This prevents stack traces from leaking to public clients while maintaining top-tier API safety.
+
+#### Standardized Error Response Example
+When an operation fails (e.g., a requested resource is missing or credentials are void), the `GlobalExceptionHandler` interceptor overrides default server screens to return a unified schema:
+
+```json
+{
+  "timestamp": "2026-09-10T13:08:42.139",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Book not found with ID: 8",
+  "path": "/api/loans"
+}
+```
+
 ---
 
 ## 🔒 Security Architecture
